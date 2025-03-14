@@ -2,6 +2,7 @@
 
 class Scoring:
 
+  // laksee pisteet
   def calculatePoints(player: Player): Int =
     var points = 0
 

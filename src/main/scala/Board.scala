@@ -2,10 +2,10 @@
 
 class Board:
 
-  private var tableCards: List[PlayingCard] = List()
+  var tableCards: List[PlayingCard] = List()
 
   // lisää kortin pöytään
-  def addCardTOTable(card: PlayingCard): Unit =
+  def addCardToTable(card: PlayingCard): Unit =
     tableCards = tableCards :+ card
 
   // poistaa kortin pöydästä, silloin kun pelaaja ottaa sen

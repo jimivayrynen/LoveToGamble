@@ -2,7 +2,7 @@
 
 class Player(val name: String):
 
-  private var hand:           List[PlayingCard] = List()
+  var hand:           List[PlayingCard] = List()
   var collectedCards: List[PlayingCard] = List()
   var points: Int = 0
 
