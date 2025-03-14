@@ -9,7 +9,7 @@ class Board:
     tableCards = tableCards :+ card
 
   // poistaa kortin pöydästä, silloin kun pelaaja ottaa sen
-  def removeCardFromTabl(card: PlayingCard): Unit =
+  def removeCardFromTable(card: PlayingCard): Unit =
     tableCards = tableCards.filterNot(_== card)
 
   // tarkistaa mitkä kortit voidaan ottaa
@@ -17,6 +17,16 @@ class Board:
     val matchingCards = tableCards.filter( tableCard =>
       tableCard.value == playercard.value)
     matchingCards
+
+  // nostaa kortin pöydältä
+  def drawCard(): PlayingCard =
+    if (tableCards.nonEmpty) then
+      val card = tableCards.head
+      removeCardFromTable(card)
+      card
+    else
+      throw new Exception("No cards left on the table")
+
 
   // näyttää pöydällä olevat kortit
   def showTable(): Unit =
