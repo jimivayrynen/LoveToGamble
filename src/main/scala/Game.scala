@@ -1,56 +1,44 @@
 
 
-class Game(players: List[Player]):
+class Game(val players: List[Player]):
 
-  private var currentPlayerIndex = 0
-  private val scoring = new Scoring()
-  private val board = new Board()
+  var currentPlayerIndex = 0
+  val scoring = new Scoring()
+  val board = new Board()
+  val deck = new Deck()
+  var tableCards: List[PlayingCard] = List() // Kortit pöydällä
 
 
   // aloittaa pelin
   def startGame(): Unit =
-    dealCardsToPlayers()
+    deck.shuffleDeck()
+    players.foreach(p =>
+      val cards = board.dealCards(4)
+      p.sethand(cards))
+    board.initTable()
 
-    while (!isGameOver) do
-      val currentPlayer = players(currentPlayerIndex)
-      playTurn(currentPlayer)
-      updateGameState(currentPlayer)
-      switchTurn()
-
-    val winner = scoring.checkWinner(players)
-    println(s"Game over! The winner is: ${winner.name}")
-
-  // määrittää pelin lopun
-  private def isGameOver: Boolean =
-    players.exists(_.points >= 16)
-
-  // jakaa kortit
-  private def dealCardsToPlayers(): Unit =
-    players.foreach( player =>
-      for (_ <- 1 to 4) do
-        val card = board.drawCard()
-        player.addCard(card))
-
-
-  // pelaajan vuoro GUI:ssa
-  private def playTurn(player: Player): Unit =
-    println(s"${player.name}'s turn")
-    player.showHand()
-
-    val playerCard = selectCardFromHand(player) //GUI:n jälkeen muutos
-
-    // onko siirto laillinen
-    if (CardValidator.validateMove(playerCard, board.tableCards))
-      board.addCardToTable(playerCard)
-      player.playCard(playerCard)
-      scoring.updateScore(player)
-      board.showTable()
+  def playCard(card: PlayingCard): Boolean =
+    if currentPlayer.hand.contains(card) &&
+      CardValidator.validateMove(card, board.tableCards)
+      then
+      board.addCardToTable(card)
+      currentPlayer.playCard(card)
+      scoring.updateScore(currentPlayer)
+      true
     else
-      println("Invalid move, try again!")
+      false
 
-  // Graafinen kortin valinta
-  private def selectCardFromHand(player: Player): PlayingCard =
-    player.hand.head
+
+  def currentPlayer: Player = players(currentPlayerIndex)
+  // määrittää pelin lopun
+  def isGameOver: Boolean =
+    players.exists(_.points >= 16)
+    
+  def winner: Option[Player] =
+    val maxPointsPlayer = players.maxBy(_.points)
+    if maxPointsPlayer.points >= 16 then Some(maxPointsPlayer) else None
+
+
 
   // päivittää pelin
   private def updateGameState(player: Player): Unit =

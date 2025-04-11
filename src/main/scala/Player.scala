@@ -23,7 +23,10 @@ class Player(val name: String):
     
   // pelaa kortin pöytään
   def playCard(card: PlayingCard): Unit =
-    removeCard(card) // Board luokassa voi lisätä myöhemmin kortin?????
+    hand = hand.filterNot(_ == card)
+
+  def sethand(cards: List[PlayingCard]): Unit =
+    hand = cards
 
   
   // Näyttää käden

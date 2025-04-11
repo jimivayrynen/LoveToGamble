@@ -13,7 +13,7 @@ class Scoring:
     points += player.collectedCards.count(card => card.value == "2" && card.suit == "Spades") // pata-2
     points += player.collectedCards.count(card => card.suit == "Spades") * 2 // eniten patoja saanut pelaaja
 
-    if ( player.collectedCards.size > 10) then points += 1  // yli 10 pistettä
+    if ( player.collectedCards.size > 10) then points += 1  // eniten kortteja saanut!!!!!! ei yli kymmenen
 
     points
 
