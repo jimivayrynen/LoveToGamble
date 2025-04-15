@@ -6,7 +6,7 @@ class Game(var players: List[Player]):
   val scoring = new Scoring()
   val board = new Board()
   var tableCards: List[PlayingCard] = List() // Kortit pöydällä
-
+  var lastTaker: Option[Player] = None
 
   // aloittaa pelin
   def startGame(): Unit =
@@ -26,6 +26,7 @@ class Game(var players: List[Player]):
         val taken = takes.head
         board.tableCards = board.tableCards.filterNot(taken.contains)
         currentPlayer.collectedCards = (card +: taken) ++ currentPlayer.collectedCards
+        lastTaker = Some(currentPlayer)
 
         if board.tableCards.isEmpty then
           currentPlayer.mokkiCount += 1
@@ -41,11 +42,13 @@ class Game(var players: List[Player]):
 
   // määrittää pelin lopun
   def isGameOver: Boolean =
-    players.exists(_.points >= 16)
+    players.exists(_.points >= 16) || (board.deck.cardsLeft == 0 && players.forall(_.hand.isEmpty))
 
   def winner: Option[Player] =
-    val maxPointsPlayer = players.maxBy(_.points)
-    if maxPointsPlayer.points >= 16 then Some(maxPointsPlayer) else None
+    if players.exists(_.points >= 16) || (board.deck.cardsLeft == 0) then
+      Some(players.maxBy(_.points))
+    else None
+
 
   def endGame():Unit =
     scoring.finalizeScore(players)
@@ -58,7 +61,12 @@ class Game(var players: List[Player]):
 
   // seuraavan pelaajan vuoro
   def switchTurn(): Unit =
-    currentPlayerIndex = (currentPlayerIndex + 1) % players.size
+    if players.forall(_.hand.isEmpty) then
+      lastTaker.foreach(_.collectedCards ++= board.tableCards)
+      board.tableCards = Nil
+      endGame()
+    else
+      currentPlayerIndex = (currentPlayerIndex + 1) % players.size
 
     // Täydennetään seuraavan pelaajan käsi
     val player = currentPlayer

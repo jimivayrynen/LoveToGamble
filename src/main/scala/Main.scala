@@ -143,7 +143,8 @@ object Main extends JFXApp3:
     // Näyttää voitto ilmoituksen
       if game.isGameOver then
         game.endGame()
-        val winText = new Text(300, 250, s"${game.winner} voitti pelin!"):
+        val winnerName = game.winner.map(_.name).getOrElse("Tuntematon")
+        val winText = new Text(300, 250, s"$winnerName voitti pelin!"):
           font = Font(30)
           fill = Gold
           effect = new DropShadow(radius = 10, color = Black)
@@ -153,7 +154,7 @@ object Main extends JFXApp3:
           layoutY = 300
           onAction = _ => showStartMenu()
 
-        mainRoot.children ++ Seq(winText, newGameButton)
+        mainRoot.children ++= Seq(winText, newGameButton)
       else renderCards()
 
       mainRoot.children += menuBox()
@@ -192,8 +193,8 @@ object Main extends JFXApp3:
 
     //pelaa nappi, toimii jos käden kortti on valittu
     val playButton = new Button("Pelaa"):
-      layoutX = 400
-      layoutY = 580
+      layoutX = 50
+      layoutY = 550
       disable = selectedHandCard.isEmpty
       onAction = _ =>
         selectedHandCard.foreach( handcard =>
