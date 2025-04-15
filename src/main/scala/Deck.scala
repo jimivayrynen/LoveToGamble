@@ -3,41 +3,41 @@ import scala.util.Random
 
 class Deck():
 
-  private val suits = List("Hearts", "Diamonds", "Clubs", "Spades")
-  private val values = List("2", "3", "4", "5", "6", "7", "8", "9", "10", "Jack", "Queen", "King", "Ace")
-
-  private var deck: List[PlayingCard] = createDeck()
-  private var cardBuffer = scala.collection.mutable.Buffer(createDeck()*)
+  private var cards: List[PlayingCard] = createDeck()
 
 
   //luo korttipakan
   private def createDeck(): List[PlayingCard] =
-    for
-      suit <- suits
-      value <- values
-    yield  new PlayingCard(value, suit)
+    val suits = List("Hearts", "Diamonds", "Clubs", "Spades")
+    val values = List("2", "3", "4", "5", "6", "7", "8", "9", "10", "Jack", "Queen", "King", "Ace")
+    Random.shuffle(for suit <- suits; value <- values yield new PlayingCard(value, suit))
+
+
 
   //sekoittaa korttipakan
   def shuffleDeck(): Unit =
-    deck = Random.shuffle(deck)
+    cards = Random.shuffle(cards)
 
-  //jaa kortteja pelaajille
-  def dealCard(): Option[PlayingCard] =
-    if cardBuffer.nonEmpty then Some(cardBuffer.remove(0))
-    else None
 
 
   //Kortin nostaminen pakasta
-  def drawCards(): Option[PlayingCard] =
-    deck match
+  def dealCard(): Option[PlayingCard] =
+    cards match
       case Nil => None
       case head :: tail =>
-        deck = tail
+        cards = tail
         Some(head)
 
-  //pakan koko
-  def size(): Int = deck.size
+  def dealCards(n: Int): List[PlayingCard] =
+    (1 to n).flatMap(_ => dealCard()).toList
 
-  def cardsLeft: Int = cardBuffer.size
+  //paljonko pakkaa jäljellä
+  def cardsLeft: Int = cards.size
+
+  def setCards(newCards: List[PlayingCard]): Unit =
+    cards = newCards
+
+  def getCards: List[PlayingCard] = cards
+
 
 end Deck

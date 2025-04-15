@@ -3,7 +3,7 @@
 class Board:
 
 
-  private val deck = new Deck()
+  val deck = new Deck()
   var tableCards: List[PlayingCard] = List()
 
   def shuffleDeck(): Unit =
@@ -15,8 +15,8 @@ class Board:
   def dealCard(): Option[PlayingCard] = deck.dealCard()
 
   def dealCards(n: Int): List[PlayingCard] =
-    (1 to n).flatMap(_ => deck.dealCard()).toList
-
+    deck.dealCards(n)
+    
   def initTable(): Unit =
     tableCards = dealCards(4)
 
@@ -29,6 +29,7 @@ class Board:
     deck.dealCard()
 
   def remainingCards: Int = deck.cardsLeft
+
 
   // näyttää pöydällä olevat kortit
   def showTable(): Unit =

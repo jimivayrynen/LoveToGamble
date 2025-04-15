@@ -2,29 +2,26 @@
 
 class Scoring:
 
-  // laksee pisteet
-  def calculatePoints(player: Player): Int =
-    var points = 0
-
-    if (player.collectedCards.size == 4) then points += 1 //mökki
-
-    points += player.collectedCards.count(_.value == "Ace") // ässät
-    points += player.collectedCards.count(card => card.value == "10" && card.suit == "Diamonds") * 2 // ruutu-10
-    points += player.collectedCards.count(card => card.value == "2" && card.suit == "Spades") // pata-2
-    points += player.collectedCards.count(card => card.suit == "Spades") * 2 // eniten patoja saanut pelaaja
-
-    if ( player.collectedCards.size > 10) then points += 1  // eniten kortteja saanut!!!!!! ei yli kymmenen
-
-    points
-
   // päivitetään pelaajan pisteet
   def updateScore(player: Player): Unit =
-    player.points =calculatePoints(player)
+    val aces = player.collectedCards.count(_.value == "Ace") // ässät
+    val tenOfHearts = player.collectedCards.count(c => c.value == "10" && c.suit == "Diamonds") * 2 //hertta kymppi
+    val mokkiPoints = player.mokkiCount // mökit
+
+    player.points = aces + tenOfHearts + mokkiPoints // yhteensä
+
 
   // määrittää voittajan
-  def checkWinner(players: List[Player]): Player =
-    val winner = players.maxBy(_.points)
-    winner
+  def finalizeScore(players: List[Player]): Unit =
+    players.foreach(updateScore)
+
+    //Eniten kortteja
+    val mostCards = players.maxByOption(_.collectedCards.size)
+    // Eniten patoja
+    val mostSpades = players.maxByOption(_.collectedCards.count(_.suit == "Spades"))
+
+    mostCards.foreach(_.points += 1)
+    mostSpades.foreach(_.points += 1)
 
 
 end Scoring
