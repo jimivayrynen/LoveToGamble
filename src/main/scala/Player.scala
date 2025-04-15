@@ -5,6 +5,7 @@ class Player(val name: String):
   var hand:           List[PlayingCard] = List()
   var collectedCards: List[PlayingCard] = List()
   var points: Int = 0
+  var mokkiCount: Int = 0
 
   // Lisää pelaajalle kortin käteen
   def addCard(card: PlayingCard): Unit =
