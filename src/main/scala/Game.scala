@@ -1,3 +1,9 @@
+import scalafx.application.Platform
+import scalafx.scene.paint.Color
+
+import scala.concurrent
+import scala.concurrent.Future
+import scala.concurrent.ExecutionContext.Implicits.global
 
 
 class Game(var players: List[Player]):
@@ -33,7 +39,15 @@ class Game(var players: List[Player]):
       else
         board.addCardToTable(card)
 
-      scoring.updateScore(currentPlayer)
+
+      // Jos kaikkien kortit pelattu mutta peli ei ole vielä ohi
+      if players.forall(_.hand.isEmpty) then
+        lastTaker.foreach(_.collectedCards ++= board.tableCards)
+        board.tableCards = Nil
+        scoring.finalizeScore(players)
+        if board.deck.cardsLeft == 0 && (players.forall(_.hand.isEmpty)) then
+          startNextRound()
+
       true
     else false
 
@@ -42,16 +56,28 @@ class Game(var players: List[Player]):
 
   // määrittää pelin lopun
   def isGameOver: Boolean =
-    players.exists(_.points >= 16) || (board.deck.cardsLeft == 0 && players.forall(_.hand.isEmpty))
+    players.exists(_.points >= 16)
 
   def winner: Option[Player] =
-    if players.exists(_.points >= 16) || (board.deck.cardsLeft == 0) then
+    if players.exists(_.points >= 16) then
       Some(players.maxBy(_.points))
     else None
 
 
   def endGame():Unit =
     scoring.finalizeScore(players)
+
+  def startNextRound(): Unit =
+    players.foreach(_.hand = List())
+
+    val newDeckCards = players.flatMap(_.collectedCards) ++ board.tableCards
+    players.foreach(_.collectedCards = List())
+    board.resetDeck(newDeckCards)
+    board.tableCards = List()
+
+    players.foreach(p => p.sethand(board.dealCards(4)))
+    board.initTable()
+    currentPlayerIndex = 0
 
 
   // päivittää pelin
@@ -62,9 +88,10 @@ class Game(var players: List[Player]):
   // seuraavan pelaajan vuoro
   def switchTurn(): Unit =
     if players.forall(_.hand.isEmpty) then
-      lastTaker.foreach(_.collectedCards ++= board.tableCards)
-      board.tableCards = Nil
-      endGame()
+      if board.deck.cardsLeft == 0 then
+        endGame()
+      else
+        startNextRound()
     else
       currentPlayerIndex = (currentPlayerIndex + 1) % players.size
 
@@ -74,6 +101,22 @@ class Game(var players: List[Player]):
     if missing > 0 then
       val newCards = board.dealCards(missing)
       player.hand = player.hand ++ newCards
+
+    player match
+      case ai: ComputerPlayer =>
+        Platform.runLater(
+          Main.showTemoraryMessage("Tietokone pelaa...", Color.LightGreen))
+          Future {
+            Thread.sleep(2000)
+            val (card, take) = ai.decideMove(board.tableCards)
+            Platform.runLater {
+              playCard(card, take)
+              switchTurn()
+              Main.updateUI()
+            }
+          }
+      case _ =>
+        Platform.runLater(Main.updateUI())
 
   def copyFrom(other: Game): Unit =
     this.players = other.players

@@ -16,7 +16,7 @@ class Board:
 
   def dealCards(n: Int): List[PlayingCard] =
     deck.dealCards(n)
-    
+
   def initTable(): Unit =
     tableCards = dealCards(4)
 
@@ -29,6 +29,10 @@ class Board:
     deck.dealCard()
 
   def remainingCards: Int = deck.cardsLeft
+
+  def resetDeck(newCards: List[PlayingCard]): Unit =
+    deck.setCards(newCards)
+    deck.shuffleDeck()
 
 
   // näyttää pöydällä olevat kortit

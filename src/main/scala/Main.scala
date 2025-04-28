@@ -1,6 +1,5 @@
 import scalafx.application.JFXApp3
 import scalafx.scene.Scene
-import scalafx.scene.input.MouseEvent
 import scalafx.scene.layout.{HBox, Pane, VBox}
 import scalafx.scene.shape.Rectangle
 import scalafx.scene.paint.Color.*
@@ -14,9 +13,6 @@ import scalafx.util.Duration
 import scalafx.scene.effect.DropShadow
 import scalafx.animation.TranslateTransition
 import javafx.event.EventHandler
-
-import scala.concurrent.Future
-import scala.concurrent.ExecutionContext.Implicits.global
 import scala.language.postfixOps
 
 object Main extends JFXApp3:
@@ -27,6 +23,8 @@ object Main extends JFXApp3:
 
   var selectedHandCard: Option[PlayingCard] = None
   var selectedTableCards: Set[PlayingCard] = Set()
+
+
 
   // käynnistää pelin ja alustaa pelinäkymän
   def start() =
@@ -49,8 +47,13 @@ object Main extends JFXApp3:
       layoutX = 330
       layoutY = 50
 
-    val playerCountBox = new ComboBox[Int](Seq(2, 3, 4)):
-      value = 2
+    val includeAI = new ComboBox[String](Seq("Ei tekoälyä", "Lisää tietokonepelaaja")):
+      value = "Ei tekoälyä"
+      layoutX = 500
+      layoutY = 100
+
+    val playerCountBox = new ComboBox[Int](Seq(1, 2, 3, 4)):
+      value = 1
       layoutX = 400
       layoutY = 100
 
@@ -72,13 +75,17 @@ object Main extends JFXApp3:
         val names = nameFields.children.toList.collect { case node: javafx.scene.control.TextField => node.getText}.filter(_.nonEmpty)
         if names.size == playerCountBox.value() then
           val players = names.map(n => new Player(n)).toList
-          game = new Game(players)
+          val finalPlayers = if includeAI.value() == "Lisää tietokonepelaaja" then
+            players :+ new ComputerPlayer("Tietokone")
+          else
+            players
+          game = new Game(finalPlayers)
           game.startGame()
           updateUI()
         else
           showTemoraryMessage("Syötä kaikkien nimet", Color.Red)
 
-    mainRoot.children ++= Seq(title, playerCountBox, nameFields, startButton)
+    mainRoot.children ++= Seq(title, playerCountBox, nameFields, startButton, includeAI)
 
 
   def menuBox() = new VBox:
