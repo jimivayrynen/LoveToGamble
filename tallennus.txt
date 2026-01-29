@@ -1,5 +1,6 @@
-PLAYER:ss:4:
-PLAYER:ff:6:
-TABLE:4_of_spades,7_of_spades
-DECK:
-TURN:ff
+PLAYER:Pelaaja 1:0:2_of_spades,ace_of_spades,7_of_hearts,10_of_clubs
+PLAYER:Pelaaja 2:0:10_of_hearts,6_of_hearts,jack_of_spades
+PLAYER:Tietokone:0:8_of_spades,king_of_clubs,7_of_clubs
+TABLE:ace_of_clubs,4_of_clubs,7_of_spades
+DECK:7_of_diamonds,5_of_hearts,10_of_spades,8_of_diamonds,3_of_diamonds,queen_of_clubs,2_of_clubs,8_of_clubs,4_of_hearts,2_of_hearts,2_of_diamonds,queen_of_spades,5_of_spades,ace_of_hearts,10_of_diamonds,king_of_spades,6_of_clubs,4_of_spades,jack_of_diamonds,5_of_clubs,8_of_hearts,3_of_clubs,ace_of_diamonds
+TURN:Pelaaja 1
